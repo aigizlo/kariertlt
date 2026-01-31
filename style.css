@@ -373,7 +373,7 @@ section {
     color: var(--color-accent);
     cursor: pointer;
     position: absolute;
-    bottom: 28px;
+    bottom: 42px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 2;
