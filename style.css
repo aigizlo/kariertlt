@@ -98,24 +98,15 @@ button {
 }
 
 .logo__img {
-    width: 180px;
-    height: 54px;
-}
-
-.logo__text {
-    display: flex;
-    flex-direction: column;
-}
-
-.logo__sub {
-    font-size: 12px;
-    letter-spacing: 0.2em;
-    color: #9aa0a3;
+    width: 207px;
+    height: 62px;
 }
 
 .nav {
     display: flex;
-    gap: 24px;
+    flex: 1;
+    justify-content: space-evenly;
+    gap: 0;
     font-size: 15px;
     font-weight: 600;
 }
@@ -364,19 +355,23 @@ section {
 
 .intro__scroll {
     display: inline-flex;
-    flex-direction: column;
     align-items: center;
-    gap: 6px;
-    font-size: 13px;
-    text-transform: uppercase;
-    letter-spacing: 0.2em;
-    color: var(--color-primary);
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    color: var(--color-accent);
     cursor: pointer;
     animation: bounce 2s infinite;
+    position: absolute;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
-.intro__arrow {
-    font-size: 22px;
+.intro__scroll-icon {
+    width: 28px;
+    height: 28px;
 }
 
 @keyframes bounce {
@@ -818,6 +813,16 @@ section {
     box-shadow: var(--shadow-strong);
     font-weight: 700;
     z-index: 1001;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(12px);
+    transition: var(--transition);
+}
+
+.call.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
 }
 
 .modal {

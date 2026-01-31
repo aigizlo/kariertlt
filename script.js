@@ -1,6 +1,7 @@
 const header = document.querySelector('.header');
 const intro = document.querySelector('.intro');
 const introScroll = document.querySelector('.intro__scroll');
+const callButton = document.querySelector('.call');
 const burger = document.querySelector('.burger');
 const nav = document.querySelector('.nav');
 const modal = document.querySelector('.modal');
@@ -46,8 +47,10 @@ if (header && intro) {
         const triggerPoint = intro.offsetHeight - 80;
         if (window.scrollY > triggerPoint) {
             header.classList.add('is-visible');
+            if (callButton) callButton.classList.add('is-visible');
         } else {
             header.classList.remove('is-visible');
+            if (callButton) callButton.classList.remove('is-visible');
         }
     };
     toggleHeader();
