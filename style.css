@@ -149,6 +149,7 @@ button {
     font-size: 14px;
     transition: var(--transition);
     cursor: pointer;
+    min-width: 200px;
 }
 
 .btn--primary {
@@ -251,6 +252,8 @@ button {
 .hero__content {
     display: grid;
     gap: 24px;
+    text-align: center;
+    justify-items: center;
 }
 
 .hero__badge {
@@ -279,20 +282,27 @@ button {
     display: flex;
     flex-wrap: wrap;
     gap: 16px;
+    justify-content: center;
 }
 
 .hero__stats {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 16px;
     margin-top: 16px;
+    align-self: stretch;
+    text-align: left;
+    justify-items: stretch;
+    justify-self: stretch;
 }
+
 
 .hero__stat {
     background: rgba(255, 255, 255, 0.1);
     border-radius: var(--radius-md);
     padding: 16px 20px;
     backdrop-filter: blur(6px);
+    text-align: left;
 }
 
 .hero__stat span {
@@ -407,6 +417,7 @@ section {
 
 .about {
     background: linear-gradient(180deg, rgba(217, 231, 245, 0.6), rgba(255, 255, 255, 0.4));
+    padding: 60px 0 90px;
 }
 
 .about__grid {
@@ -456,20 +467,33 @@ section {
     background: var(--color-white);
 }
 
+.products .container {
+    position: relative;
+}
+
 .products__controls {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
     display: flex;
-    justify-content: flex-end;
-    gap: 12px;
-    margin-bottom: 20px;
+    justify-content: space-between;
+    align-items: center;
+    transform: translateY(-50%);
+    pointer-events: none;
+    padding: 0 10px;
 }
 
 .control {
     width: 44px;
     height: 44px;
     border-radius: 50%;
-    border: 1px solid rgba(233, 240, 242, 0.213);
+    border: 1px solid rgba(15, 76, 129, 0.2);
     color: var(--color-primary);
     font-weight: 700;
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: var(--shadow);
+    pointer-events: auto;
 }
 
 .products__carousel {
@@ -888,17 +912,21 @@ section {
 @media (max-width: 900px) {
     .nav {
         position: fixed;
-        inset: 0;
-        background: rgba(247, 245, 240, 0.98);
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100vh;
+        background: #ffffff;
         flex-direction: column;
         align-items: center;
-        justify-content: center;
-        transform: translateX(100%);
-        transition: transform var(--transition);
+        justify-content: flex-start;
+        transition: left var(--transition);
+        z-index: 998;
+        padding-top: 80px;
     }
 
     .nav.is-open {
-        transform: translateX(0);
+        left: 0;
     }
 
     .header__actions .btn--ghost {
@@ -907,6 +935,12 @@ section {
 
     .burger {
         display: flex;
+        z-index: 1001;
+    }
+
+    .nav__link {
+        font-size: 18px;
+        padding: 12px 0;
     }
 }
 

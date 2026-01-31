@@ -24,6 +24,16 @@ if (burger && nav) {
         document.body.style.overflow = isOpen ? 'hidden' : '';
     });
 
+    document.addEventListener('click', (event) => {
+        if (!nav.classList.contains('is-open')) return;
+        const target = event.target;
+        if (target instanceof Element && !nav.contains(target) && !burger.contains(target)) {
+            nav.classList.remove('is-open');
+            burger.classList.remove('is-active');
+            document.body.style.overflow = '';
+        }
+    });
+
     nav.querySelectorAll('a').forEach((link) => {
         link.addEventListener('click', () => {
             nav.classList.remove('is-open');
@@ -70,6 +80,29 @@ if (productsTrack && prevBtn && nextBtn) {
 
     nextBtn.addEventListener('click', () => {
         productsTrack.scrollBy({ left: scrollAmount(), behavior: 'smooth' });
+    });
+
+    let autoScroll = setInterval(() => {
+        const maxScroll = productsTrack.scrollWidth - productsTrack.clientWidth;
+        const next = productsTrack.scrollLeft + scrollAmount();
+        if (next >= maxScroll - 10) {
+            productsTrack.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+            productsTrack.scrollBy({ left: scrollAmount(), behavior: 'smooth' });
+        }
+    }, 3500);
+
+    productsTrack.addEventListener('mouseenter', () => clearInterval(autoScroll));
+    productsTrack.addEventListener('mouseleave', () => {
+        autoScroll = setInterval(() => {
+            const maxScroll = productsTrack.scrollWidth - productsTrack.clientWidth;
+            const next = productsTrack.scrollLeft + scrollAmount();
+            if (next >= maxScroll - 10) {
+                productsTrack.scrollTo({ left: 0, behavior: 'smooth' });
+            } else {
+                productsTrack.scrollBy({ left: scrollAmount(), behavior: 'smooth' });
+            }
+        }, 3500);
     });
 }
 
