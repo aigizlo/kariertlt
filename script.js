@@ -9,6 +9,8 @@ const modalClose = document.querySelector('.modal__close');
 const modalTitle = document.getElementById('modal-title');
 const modalDesc = document.querySelector('.modal__desc');
 const modalImage = document.querySelector('.modal__image');
+const modalCta = document.querySelector('[data-fill-material]');
+const materialSelect = document.querySelector('select[name="material"]');
 const modalFields = {
     spec: document.querySelector('[data-field="spec"]'),
     gost: document.querySelector('[data-field="gost"]'),
@@ -125,10 +127,12 @@ if (productsTrack && prevBtn && nextBtn) {
     });
 }
 
+let lastProductTitle = '';
 const products = document.querySelectorAll('.product');
 products.forEach((product) => {
     product.addEventListener('click', () => {
         const { title, desc, gost, spec, use, image } = product.dataset;
+        lastProductTitle = title || '';
         modalTitle.textContent = title;
         modalDesc.textContent = desc;
         modalFields.spec.textContent = spec;
@@ -150,6 +154,20 @@ const closeModal = () => {
 
 if (modalClose) {
     modalClose.addEventListener('click', closeModal);
+}
+
+if (modalCta) {
+    modalCta.addEventListener('click', () => {
+        closeModal();
+        if (materialSelect && lastProductTitle) {
+            const option = Array.from(materialSelect.options).find(
+                (opt) => opt.textContent.trim() === lastProductTitle
+            );
+            if (option) {
+                materialSelect.value = option.value;
+            }
+        }
+    });
 }
 
 if (modal) {
