@@ -851,6 +851,12 @@ section {
     transform: translateY(0);
 }
 
+.call.is-hidden-footer {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(12px);
+}
+
 .modal {
     position: fixed;
     inset: 0;
@@ -949,6 +955,10 @@ section {
 @media (max-width: 700px) {
     section {
         padding: 70px 0;
+    }
+
+    .intro__scroll {
+        bottom: 60px;
     }
 
     .hero__actions {

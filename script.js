@@ -67,6 +67,25 @@ if (header && intro) {
     window.addEventListener('scroll', toggleHeader);
 }
 
+if (callButton) {
+    const footer = document.querySelector('.footer');
+    if (footer && 'IntersectionObserver' in window) {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        callButton.classList.add('is-hidden-footer');
+                    } else {
+                        callButton.classList.remove('is-hidden-footer');
+                    }
+                });
+            },
+            { rootMargin: '0px 0px -10% 0px', threshold: 0 }
+        );
+        observer.observe(footer);
+    }
+}
+
 const productsTrack = document.querySelector('.products__track');
 const prevBtn = document.querySelector('.control--prev');
 const nextBtn = document.querySelector('.control--next');
@@ -158,11 +177,18 @@ filters.forEach((filter) => {
 
 const phoneInput = document.querySelector('input[name="phone"]');
 if (phoneInput) {
-    phoneInput.addEventListener('input', () => {
+    phoneInput.addEventListener('input', (event) => {
         let digits = phoneInput.value.replace(/\D/g, '');
         if (digits.startsWith('7')) {
             digits = digits.slice(1);
         }
+        if (event.inputType === 'deleteContentBackward') {
+            const raw = phoneInput.value;
+            if (raw && /[^0-9]$/.test(raw)) {
+                digits = digits.slice(0, -1);
+            }
+        }
+        digits = digits.slice(0, 10);
         let formatted = '+7';
         if (digits.length > 0) {
             formatted += ' (' + digits.slice(0, 3);
