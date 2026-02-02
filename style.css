@@ -156,6 +156,7 @@ button {
     background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
     color: var(--color-white);
     box-shadow: var(--shadow);
+    border: 2px solid rgba(255, 255, 255, 0.7);
 }
 
 .btn--primary:hover {
@@ -804,7 +805,6 @@ section {
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 20px;
     color: var(--color-muted);
 }
 
