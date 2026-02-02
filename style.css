@@ -966,6 +966,11 @@ section {
         align-items: flex-start;
     }
 
+    .hero__actions .btn {
+        width: 100%;
+        max-width: 260px;
+    }
+
     .about__cards {
         grid-template-columns: 1fr;
     }
