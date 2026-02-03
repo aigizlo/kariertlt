@@ -238,7 +238,10 @@ button {
     position: absolute;
     inset: 0;
     background: linear-gradient(120deg, rgba(16, 21, 23, 0.75), rgba(15, 76, 129, 0.55)),
-        url('image/backround.jpg') center/cover no-repeat;
+        image-set(
+            url('image/backround.webp') type('image/webp'),
+            url('image/backround.jpg') type('image/jpeg')
+        ) center/cover no-repeat;
     z-index: -2;
 }
 
@@ -700,7 +703,10 @@ section {
 
 .cta {
     background: linear-gradient(135deg, rgba(15, 76, 129, 0.95), rgba(47, 143, 214, 0.9)),
-        url('image/backround.jpg') center/cover no-repeat;
+        image-set(
+            url('image/backround.webp') type('image/webp'),
+            url('image/backround.jpg') type('image/jpeg')
+        ) center/cover no-repeat;
     color: var(--color-white);
 }
 
