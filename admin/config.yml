@@ -8,37 +8,46 @@ public_folder: "/image/uploads"
 collections:
   - name: "faq"
     label: "FAQ"
-    format: "json"
-    file: "content/faq.json"
-    fields:
-      - name: "items"
-        label: "Вопросы и ответы"
-        widget: "list"
+    files:
+      - name: "faq"
+        label: "FAQ"
+        file: "content/faq.json"
+        format: "json"
         fields:
-          - { name: "question", label: "Вопрос", widget: "string" }
-          - { name: "answer", label: "Ответ", widget: "text" }
+          - name: "items"
+            label: "Вопросы и ответы"
+            widget: "list"
+            fields:
+              - { name: "question", label: "Вопрос", widget: "string" }
+              - { name: "answer", label: "Ответ", widget: "text" }
 
   - name: "gallery"
     label: "Фотогалерея"
-    format: "json"
-    file: "content/gallery.json"
-    fields:
-      - name: "items"
-        label: "Изображения"
-        widget: "list"
+    files:
+      - name: "gallery"
+        label: "Фотогалерея"
+        file: "content/gallery.json"
+        format: "json"
         fields:
-          - { name: "category", label: "Категория", widget: "select", options: ["fleet", "pit", "port", "barges", "rail", "road", "build"] }
-          - { name: "image", label: "Фото", widget: "image" }
-          - { name: "alt", label: "Alt-текст", widget: "string" }
+          - name: "items"
+            label: "Изображения"
+            widget: "list"
+            fields:
+              - { name: "category", label: "Категория", widget: "select", options: ["fleet", "pit", "port", "barges", "rail", "road", "build"] }
+              - { name: "image", label: "Фото", widget: "image" }
+              - { name: "alt", label: "Alt-текст", widget: "string" }
 
   - name: "documents"
     label: "Документы"
-    format: "json"
-    file: "content/documents.json"
-    fields:
-      - name: "items"
+    files:
+      - name: "documents"
         label: "Документы"
-        widget: "list"
+        file: "content/documents.json"
+        format: "json"
         fields:
-          - { name: "title", label: "Название", widget: "string" }
-          - { name: "url", label: "Ссылка (PDF)", widget: "string" }
+          - name: "items"
+            label: "Документы"
+            widget: "list"
+            fields:
+              - { name: "title", label: "Название", widget: "string" }
+              - { name: "url", label: "Ссылка (PDF)", widget: "string" }
