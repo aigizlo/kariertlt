@@ -178,20 +178,24 @@ if (modal) {
     });
 }
 
-const filters = document.querySelectorAll('.filter');
-const galleryItems = document.querySelectorAll('.gallery__item');
+const initGalleryFilters = () => {
+    const filters = document.querySelectorAll('.filter');
+    const galleryItems = document.querySelectorAll('.gallery__item');
 
-filters.forEach((filter) => {
-    filter.addEventListener('click', () => {
-        filters.forEach((btn) => btn.classList.remove('is-active'));
-        filter.classList.add('is-active');
-        const value = filter.dataset.filter;
-        galleryItems.forEach((item) => {
-            const match = value === 'all' || item.dataset.category === value;
-            item.style.display = match ? 'block' : 'none';
+    filters.forEach((filter) => {
+        filter.addEventListener('click', () => {
+            filters.forEach((btn) => btn.classList.remove('is-active'));
+            filter.classList.add('is-active');
+            const value = filter.dataset.filter;
+            galleryItems.forEach((item) => {
+                const match = value === 'all' || item.dataset.category === value;
+                item.style.display = match ? 'block' : 'none';
+            });
         });
     });
-});
+};
+
+initGalleryFilters();
 
 const phoneInput = document.querySelector('input[name="phone"]');
 if (phoneInput) {
@@ -233,3 +237,92 @@ if (form) {
         form.reset();
     });
 }
+
+const renderFaq = (items) => {
+    const list = document.querySelector('.faq__list');
+    if (!list || !Array.isArray(items)) return;
+    list.innerHTML = '';
+    items.forEach((item) => {
+        if (!item.question) return;
+        const details = document.createElement('details');
+        const summary = document.createElement('summary');
+        summary.textContent = item.question;
+        const p = document.createElement('p');
+        p.textContent = item.answer || '';
+        details.appendChild(summary);
+        details.appendChild(p);
+        list.appendChild(details);
+    });
+};
+
+const renderGallery = (items) => {
+    const grid = document.querySelector('.gallery__grid');
+    if (!grid || !Array.isArray(items)) return;
+    grid.innerHTML = '';
+    items.forEach((item) => {
+        if (!item.image) return;
+        const figure = document.createElement('figure');
+        figure.className = 'gallery__item';
+        figure.dataset.category = item.category || 'all';
+        const picture = document.createElement('picture');
+        const source = document.createElement('source');
+        if (item.image.endsWith('.webp')) {
+            source.srcset = item.image;
+        } else {
+            const webp = item.image.replace(/\.(jpe?g|png)$/i, '.webp');
+            source.srcset = webp;
+        }
+        source.type = 'image/webp';
+        const img = document.createElement('img');
+        img.src = item.image;
+        img.alt = item.alt || '';
+        img.loading = 'lazy';
+        img.width = 320;
+        img.height = 200;
+        picture.appendChild(source);
+        picture.appendChild(img);
+        figure.appendChild(picture);
+        grid.appendChild(figure);
+    });
+    initGalleryFilters();
+};
+
+const renderDocuments = (items) => {
+    const list = document.querySelector('.documents__list');
+    if (!list || !Array.isArray(items)) return;
+    list.innerHTML = '';
+    items.forEach((item) => {
+        if (!item.title) return;
+        const link = document.createElement('a');
+        link.className = 'doc';
+        link.href = item.url || '#';
+        link.textContent = item.title;
+        list.appendChild(link);
+    });
+};
+
+const loadContentFromJson = async () => {
+    try {
+        const [faqRes, galleryRes, docsRes] = await Promise.all([
+            fetch('content/faq.json'),
+            fetch('content/gallery.json'),
+            fetch('content/documents.json')
+        ]);
+        if (faqRes.ok) {
+            const faqData = await faqRes.json();
+            renderFaq(faqData.items || []);
+        }
+        if (galleryRes.ok) {
+            const galleryData = await galleryRes.json();
+            renderGallery(galleryData.items || []);
+        }
+        if (docsRes.ok) {
+            const docsData = await docsRes.json();
+            renderDocuments(docsData.items || []);
+        }
+    } catch (error) {
+        console.warn('Не удалось загрузить данные из JSON', error);
+    }
+};
+
+loadContentFromJson();

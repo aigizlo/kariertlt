@@ -1,0 +1,11 @@
+{
+  "items": [
+    { "category": "fleet", "image": "image/limestone_aggregate.jpeg", "alt": "Автопарк" },
+    { "category": "pit", "image": "image/mountain.jpeg", "alt": "Карьер" },
+    { "category": "port", "image": "image/PGS.jpeg", "alt": "Склад в порту" },
+    { "category": "barges", "image": "image/backround.jpg", "alt": "Баржи" },
+    { "category": "rail", "image": "image/granite aggregate.jpeg", "alt": "ЖД" },
+    { "category": "road", "image": "image/river.jpeg", "alt": "Автобан" },
+    { "category": "build", "image": "image/limestone_aggregate.jpeg", "alt": "Стройки" }
+  ]
+}
