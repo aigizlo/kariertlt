@@ -1,11 +1,49 @@
 {
-  "items": [
-    { "category": "fleet", "image": "image/limestone_aggregate.jpeg", "alt": "Автопарк" },
-    { "category": "pit", "image": "image/mountain.jpeg", "alt": "Карьер" },
-    { "category": "port", "image": "image/PGS.jpeg", "alt": "Склад в порту" },
-    { "category": "barges", "image": "image/backround.jpg", "alt": "Баржи" },
-    { "category": "rail", "image": "image/granite aggregate.jpeg", "alt": "ЖД" },
-    { "category": "road", "image": "image/river.jpeg", "alt": "Автобан" },
-    { "category": "build", "image": "image/limestone_aggregate.jpeg", "alt": "Стройки" }
-  ]
+    "items": [
+        {
+            "category": "fleet",
+            "image": "image\/limestone_aggregate.jpeg",
+            "alt": "Автопарк"
+        },
+        {
+            "category": "pit",
+            "image": "image\/mountain.jpeg",
+            "alt": "Карьер"
+        },
+        {
+            "category": "port",
+            "image": "\/image\/uploads\/img_698481b1df72f4.37353834.jpeg",
+            "alt": "Склад в порту"
+        },
+        {
+            "category": "barges",
+            "image": "\/image\/uploads\/img_698481d68341b6.14343768.jpeg",
+            "alt": "Баржи"
+        },
+        {
+            "category": "rail",
+            "image": "image\/granite aggregate.jpeg",
+            "alt": "ЖД"
+        },
+        {
+            "category": "build",
+            "image": "image\/limestone_aggregate.jpeg",
+            "alt": "Стройки"
+        },
+        {
+            "category": "road",
+            "image": "\/image\/uploads\/img_698482950cc8f0.77659466.jpeg",
+            "alt": "Автопарк"
+        },
+        {
+            "category": "port",
+            "image": "\/image\/uploads\/img_69848228875054.88183205.jpeg",
+            "alt": ""
+        },
+        {
+            "category": "road",
+            "image": "\/image\/uploads\/img_698482bc0711e7.28960228.jpg",
+            "alt": ""
+        }
+    ]
 }

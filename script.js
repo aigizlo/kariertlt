@@ -265,21 +265,32 @@ const renderGallery = (items) => {
         figure.className = 'gallery__item';
         figure.dataset.category = item.category || 'all';
         const picture = document.createElement('picture');
-        const source = document.createElement('source');
-        if (item.image.endsWith('.webp')) {
+        const isWebp = /\.webp$/i.test(item.image);
+        if (isWebp) {
+            const source = document.createElement('source');
             source.srcset = item.image;
-        } else {
-            const webp = item.image.replace(/\.(jpe?g|png)$/i, '.webp');
-            source.srcset = webp;
+            source.type = 'image/webp';
+            picture.appendChild(source);
         }
-        source.type = 'image/webp';
         const img = document.createElement('img');
         img.src = item.image;
         img.alt = item.alt || '';
         img.loading = 'lazy';
         img.width = 320;
         img.height = 200;
-        picture.appendChild(source);
+        img.addEventListener('error', () => {
+            if (/\.webp$/i.test(img.src)) {
+                img.src = img.src.replace(/\.webp$/i, '.png');
+                return;
+            }
+            if (/\.png$/i.test(img.src)) {
+                img.src = img.src.replace(/\.png$/i, '.jpg');
+                return;
+            }
+            if (/\.jpg$/i.test(img.src)) {
+                img.src = img.src.replace(/\.jpg$/i, '.jpeg');
+            }
+        });
         picture.appendChild(img);
         figure.appendChild(picture);
         grid.appendChild(figure);
