@@ -61,6 +61,33 @@ function safe_write_json($path, $data)
     return file_put_contents($path, $json) !== false;
 }
 
+function normalize_gallery_categories($items)
+{
+    $out = [];
+    foreach ($items as $item) {
+        if (is_string($item)) {
+            $value = trim($item);
+            if ($value === '') {
+                continue;
+            }
+            $out[] = ['value' => $value, 'label' => $value];
+            continue;
+        }
+        if (is_array($item)) {
+            $value = trim($item['value'] ?? '');
+            $label = trim($item['label'] ?? '');
+            if ($value === '') {
+                continue;
+            }
+            if ($label === '') {
+                $label = $value;
+            }
+            $out[] = ['value' => $value, 'label' => $label];
+        }
+    }
+    return $out;
+}
+
 function upload_file($inputName, $allowedExt, $targetDir)
 {
     if (!isset($_FILES[$inputName]) || $_FILES[$inputName]['error'] !== UPLOAD_ERR_OK) {
@@ -157,11 +184,28 @@ if (isset($_POST['action']) && $_POST['action'] === 'save') {
         }
     }
 
+    $galleryCategories = [];
+    if (!empty($_POST['gallery_cat_value'])) {
+        foreach ($_POST['gallery_cat_value'] as $i => $value) {
+            $value = trim($value);
+            $label = trim($_POST['gallery_cat_label'][$i] ?? '');
+            if ($value === '') {
+                continue;
+            }
+            if ($label === '') {
+                $label = $value;
+            }
+            $galleryCategories[$value] = ['value' => $value, 'label' => $label];
+        }
+    }
+    $galleryCategories = array_values($galleryCategories);
+
     $faqSaved = safe_write_json(__DIR__ . '/../content/faq.json', ['items' => $faqItems]);
     $gallerySaved = safe_write_json(__DIR__ . '/../content/gallery.json', ['items' => $galleryItems]);
     $docsSaved = safe_write_json(__DIR__ . '/../content/documents.json', ['items' => $docItems]);
+    $catsSaved = safe_write_json(__DIR__ . '/../content/gallery_categories.json', ['items' => $galleryCategories]);
 
-    if ($faqSaved && $gallerySaved && $docsSaved) {
+    if ($faqSaved && $gallerySaved && $docsSaved && $catsSaved) {
         $success = 'Изменения сохранены';
     } else {
         $error = 'Не удалось сохранить изменения';
@@ -202,7 +246,32 @@ if (!is_logged_in()) {
 
 $faqData = safe_read_json(__DIR__ . '/../content/faq.json');
 $galleryData = safe_read_json(__DIR__ . '/../content/gallery.json');
+$galleryCatData = safe_read_json(__DIR__ . '/../content/gallery_categories.json');
 $docsData = safe_read_json(__DIR__ . '/../content/documents.json');
+$defaultGalleryCats = [
+    ['value' => 'fleet', 'label' => 'Автопарк'],
+    ['value' => 'pit', 'label' => 'Карьер'],
+    ['value' => 'port', 'label' => 'Склад в порту'],
+    ['value' => 'barges', 'label' => 'Баржи'],
+    ['value' => 'rail', 'label' => 'ЖД'],
+    ['value' => 'road', 'label' => 'Автобан'],
+    ['value' => 'build', 'label' => 'Стройки']
+];
+$galleryCategories = normalize_gallery_categories($galleryCatData['items']);
+if (empty($galleryCategories)) {
+    $galleryCategories = $defaultGalleryCats;
+}
+$known = [];
+foreach ($galleryCategories as $cat) {
+    $known[$cat['value']] = true;
+}
+foreach ($galleryData['items'] as $item) {
+    $value = trim($item['category'] ?? '');
+    if ($value !== '' && !isset($known[$value])) {
+        $galleryCategories[] = ['value' => $value, 'label' => $value];
+        $known[$value] = true;
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -217,6 +286,7 @@ $docsData = safe_read_json(__DIR__ . '/../content/documents.json');
         main { max-width: 1100px; margin: 24px auto; padding: 0 16px 40px; }
         .section { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 10px 30px rgba(8,20,35,0.08); margin-bottom: 20px; }
         .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+        .row-3 { display: grid; grid-template-columns: 1fr 1fr auto; gap: 12px; margin-bottom: 12px; align-items: end; }
         label { font-size: 13px; color: #607182; display: block; margin-bottom: 6px; }
         input, textarea, select { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #d7e2ec; font-size: 14px; }
         textarea { min-height: 70px; resize: vertical; }
@@ -231,7 +301,7 @@ $docsData = safe_read_json(__DIR__ . '/../content/documents.json');
         .item h3 { margin: 0 0 8px; font-size: 14px; color: #213243; }
         .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
         @media (max-width: 800px) {
-            .row, .grid-3 { grid-template-columns: 1fr; }
+            .row, .row-3, .grid-3 { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -266,6 +336,30 @@ $docsData = safe_read_json(__DIR__ . '/../content/documents.json');
             </div>
 
             <div class="section">
+                <h2>Категории галереи</h2>
+                <div id="gallery-categories">
+                    <?php foreach ($galleryCategories as $i => $cat): ?>
+                        <div class="item">
+                            <div class="row-3">
+                                <div>
+                                    <label>Код категории</label>
+                                    <input name="gallery_cat_value[]" value="<?php echo htmlspecialchars($cat['value']); ?>">
+                                </div>
+                                <div>
+                                    <label>Название</label>
+                                    <input name="gallery_cat_label[]" value="<?php echo htmlspecialchars($cat['label']); ?>">
+                                </div>
+                                <div>
+                                    <button type="button" class="btn btn-muted" onclick="removeItem(this)">Удалить</button>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+                <button type="button" class="btn btn-muted" onclick="addGalleryCategory()">Добавить категорию</button>
+            </div>
+
+            <div class="section">
                 <h2>Фотогалерея</h2>
                 <div id="gallery-list">
                     <?php foreach ($galleryData['items'] as $i => $item): ?>
@@ -276,10 +370,11 @@ $docsData = safe_read_json(__DIR__ . '/../content/documents.json');
                                     <label>Категория</label>
                                     <select name="gallery_category[]">
                                         <?php
-                                        $cats = ['fleet','pit','port','barges','rail','road','build'];
-                                        foreach ($cats as $cat):
+                                        foreach ($galleryCategories as $cat):
                                         ?>
-                                            <option value="<?php echo $cat; ?>" <?php echo ($item['category'] ?? '') === $cat ? 'selected' : ''; ?>><?php echo $cat; ?></option>
+                                            <option value="<?php echo htmlspecialchars($cat['value']); ?>" <?php echo ($item['category'] ?? '') === $cat['value'] ? 'selected' : ''; ?>>
+                                                <?php echo htmlspecialchars($cat['label']); ?>
+                                            </option>
                                         <?php endforeach; ?>
                                     </select>
                                 </div>
@@ -332,7 +427,12 @@ $docsData = safe_read_json(__DIR__ . '/../content/documents.json');
     <script>
         const faqList = document.getElementById('faq-list');
         const galleryList = document.getElementById('gallery-list');
+        const galleryCategoriesList = document.getElementById('gallery-categories');
         const docsList = document.getElementById('docs-list');
+        function removeItem(button) {
+            const item = button.closest('.item');
+            if (item) item.remove();
+        }
 
         function addFaq() {
             const item = document.createElement('div');
@@ -347,6 +447,38 @@ $docsData = safe_read_json(__DIR__ . '/../content/documents.json');
             faqList.appendChild(item);
         }
 
+        function categoryOptionsHtml() {
+            const values = Array.from(document.querySelectorAll('input[name="gallery_cat_value[]"]'));
+            const labels = Array.from(document.querySelectorAll('input[name="gallery_cat_label[]"]'));
+            return values.map((input, index) => {
+                const value = input.value.trim();
+                const label = (labels[index]?.value || value).trim();
+                if (!value) return '';
+                return `<option value="${value}">${label}</option>`;
+            }).join('');
+        }
+
+        function addGalleryCategory() {
+            const item = document.createElement('div');
+            item.className = 'item';
+            item.innerHTML = `
+                <div class="row-3">
+                    <div>
+                        <label>Код категории</label>
+                        <input name="gallery_cat_value[]" value="">
+                    </div>
+                    <div>
+                        <label>Название</label>
+                        <input name="gallery_cat_label[]" value="">
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-muted" onclick="removeItem(this)">Удалить</button>
+                    </div>
+                </div>
+            `;
+            galleryCategoriesList.appendChild(item);
+        }
+
         function addGallery() {
             const index = galleryList.children.length;
             const item = document.createElement('div');
@@ -357,13 +489,7 @@ $docsData = safe_read_json(__DIR__ . '/../content/documents.json');
                     <div>
                         <label>Категория</label>
                         <select name="gallery_category[]">
-                            <option value="fleet">fleet</option>
-                            <option value="pit">pit</option>
-                            <option value="port">port</option>
-                            <option value="barges">barges</option>
-                            <option value="rail">rail</option>
-                            <option value="road">road</option>
-                            <option value="build">build</option>
+                            ${categoryOptionsHtml()}
                         </select>
                     </div>
                     <div>

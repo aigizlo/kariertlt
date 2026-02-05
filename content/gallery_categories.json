@@ -1,0 +1,32 @@
+{
+    "items": [
+        {
+            "value": "fleet",
+            "label": "Автопарк"
+        },
+        {
+            "value": "pit",
+            "label": "Карьер"
+        },
+        {
+            "value": "port",
+            "label": "Склад в порту"
+        },
+        {
+            "value": "barges",
+            "label": "Баржи"
+        },
+        {
+            "value": "rail",
+            "label": "ЖД"
+        },
+        {
+            "value": "road",
+            "label": "Автобан"
+        },
+        {
+            "value": "build",
+            "label": "Стройки"
+        }
+    ]
+}

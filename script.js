@@ -197,6 +197,112 @@ const initGalleryFilters = () => {
 
 initGalleryFilters();
 
+const galleryTrack = document.querySelector('.gallery__track');
+const galleryPrev = document.querySelector('.gallery__control--prev');
+const galleryNext = document.querySelector('.gallery__control--next');
+
+if (galleryTrack && galleryPrev && galleryNext) {
+    const scrollAmount = () => galleryTrack.querySelector('.gallery__item')?.offsetWidth || 240;
+
+    galleryPrev.addEventListener('click', () => {
+        galleryTrack.scrollBy({ left: -scrollAmount(), behavior: 'smooth' });
+    });
+
+    galleryNext.addEventListener('click', () => {
+        galleryTrack.scrollBy({ left: scrollAmount(), behavior: 'smooth' });
+    });
+}
+
+const galleryModal = document.querySelector('.gallery-modal');
+const galleryModalImage = document.querySelector('.gallery-modal__image');
+const galleryModalClose = document.querySelector('.gallery-modal__close');
+const galleryModalPrev = document.querySelector('.gallery-modal__nav--prev');
+const galleryModalNext = document.querySelector('.gallery-modal__nav--next');
+let galleryModalItems = [];
+let galleryModalIndex = 0;
+
+const getVisibleGalleryItems = () => {
+    const items = Array.from(document.querySelectorAll('.gallery__item'));
+    return items.filter((item) => item.style.display !== 'none');
+};
+
+const openGalleryModal = (items, index) => {
+    if (!galleryModal || !galleryModalImage) return;
+    galleryModalItems = items;
+    galleryModalIndex = index;
+    const img = items[index]?.querySelector('img');
+    if (img) {
+        galleryModalImage.src = img.currentSrc || img.src;
+        galleryModalImage.alt = img.alt || '';
+    }
+    galleryModal.classList.add('is-open');
+    galleryModal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+};
+
+const closeGalleryModal = () => {
+    if (!galleryModal) return;
+    galleryModal.classList.remove('is-open');
+    galleryModal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+};
+
+const showGalleryModalAt = (nextIndex) => {
+    if (!galleryModalItems.length || !galleryModalImage) return;
+    galleryModalIndex = (nextIndex + galleryModalItems.length) % galleryModalItems.length;
+    const img = galleryModalItems[galleryModalIndex]?.querySelector('img');
+    if (img) {
+        galleryModalImage.src = img.currentSrc || img.src;
+        galleryModalImage.alt = img.alt || '';
+    }
+};
+
+const initGalleryLightbox = () => {
+    const items = Array.from(document.querySelectorAll('.gallery__item'));
+    items.forEach((item) => {
+        item.addEventListener('click', () => {
+            const visibleItems = getVisibleGalleryItems();
+            const index = visibleItems.indexOf(item);
+            if (index !== -1) {
+                openGalleryModal(visibleItems, index);
+            }
+        });
+    });
+};
+
+initGalleryLightbox();
+
+if (galleryModalPrev) {
+    galleryModalPrev.addEventListener('click', () => {
+        showGalleryModalAt(galleryModalIndex - 1);
+    });
+}
+
+if (galleryModalNext) {
+    galleryModalNext.addEventListener('click', () => {
+        showGalleryModalAt(galleryModalIndex + 1);
+    });
+}
+
+if (galleryModalClose) {
+    galleryModalClose.addEventListener('click', closeGalleryModal);
+}
+
+if (galleryModal) {
+    galleryModal.addEventListener('click', (event) => {
+        if (event.target === galleryModal) {
+            closeGalleryModal();
+        }
+    });
+}
+
+document.addEventListener('keydown', (event) => {
+    if (!galleryModal || !galleryModal.classList.contains('is-open')) return;
+    if (event.key === 'Escape') closeGalleryModal();
+    if (event.key === 'ArrowLeft') showGalleryModalAt(galleryModalIndex - 1);
+    if (event.key === 'ArrowRight') showGalleryModalAt(galleryModalIndex + 1);
+});
+
 const phoneInput = document.querySelector('input[name="phone"]');
 if (phoneInput) {
     phoneInput.addEventListener('input', (event) => {
@@ -255,10 +361,33 @@ const renderFaq = (items) => {
     });
 };
 
+const renderGalleryFilters = (categories) => {
+    const filters = document.querySelector('.gallery__filters');
+    if (!filters || !Array.isArray(categories) || categories.length === 0) return;
+    filters.innerHTML = '';
+    const allBtn = document.createElement('button');
+    allBtn.className = 'filter is-active';
+    allBtn.type = 'button';
+    allBtn.dataset.filter = 'all';
+    allBtn.textContent = 'Все';
+    filters.appendChild(allBtn);
+    categories.forEach((cat) => {
+        const value = typeof cat === 'string' ? cat : cat.value;
+        const label = typeof cat === 'string' ? cat : (cat.label || cat.value);
+        if (!value) return;
+        const btn = document.createElement('button');
+        btn.className = 'filter';
+        btn.type = 'button';
+        btn.dataset.filter = value;
+        btn.textContent = label || value;
+        filters.appendChild(btn);
+    });
+};
+
 const renderGallery = (items) => {
-    const grid = document.querySelector('.gallery__grid');
-    if (!grid || !Array.isArray(items)) return;
-    grid.innerHTML = '';
+    const track = document.querySelector('.gallery__track');
+    if (!track || !Array.isArray(items)) return;
+    track.innerHTML = '';
     items.forEach((item) => {
         if (!item.image) return;
         const figure = document.createElement('figure');
@@ -293,9 +422,10 @@ const renderGallery = (items) => {
         });
         picture.appendChild(img);
         figure.appendChild(picture);
-        grid.appendChild(figure);
+        track.appendChild(figure);
     });
     initGalleryFilters();
+    initGalleryLightbox();
 };
 
 const renderDocuments = (items) => {
@@ -314,14 +444,19 @@ const renderDocuments = (items) => {
 
 const loadContentFromJson = async () => {
     try {
-        const [faqRes, galleryRes, docsRes] = await Promise.all([
+        const [faqRes, galleryRes, docsRes, catsRes] = await Promise.all([
             fetch('content/faq.json'),
             fetch('content/gallery.json'),
-            fetch('content/documents.json')
+            fetch('content/documents.json'),
+            fetch('content/gallery_categories.json')
         ]);
         if (faqRes.ok) {
             const faqData = await faqRes.json();
             renderFaq(faqData.items || []);
+        }
+        if (catsRes.ok) {
+            const catsData = await catsRes.json();
+            renderGalleryFilters(catsData.items || []);
         }
         if (galleryRes.ok) {
             const galleryData = await galleryRes.json();
