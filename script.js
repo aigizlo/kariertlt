@@ -338,9 +338,24 @@ const form = document.getElementById('requestForm');
 if (form) {
     form.addEventListener('submit', (event) => {
         event.preventDefault();
-        form.classList.add('is-sent');
-        alert('Спасибо! Мы получили заявку и скоро свяжемся с вами.');
-        form.reset();
+        const formData = new FormData(form);
+        fetch('send_telegram.php', {
+            method: 'POST',
+            body: formData
+        })
+            .then((res) => res.json())
+            .then((data) => {
+                if (data && data.success) {
+                    form.classList.add('is-sent');
+                    alert('Спасибо! Мы получили заявку и скоро свяжемся с вами.');
+                    form.reset();
+                } else {
+                    alert('Не удалось отправить заявку. Попробуйте еще раз.');
+                }
+            })
+            .catch(() => {
+                alert('Не удалось отправить заявку. Попробуйте еще раз.');
+            });
     });
 }
 

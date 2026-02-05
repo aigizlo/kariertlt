@@ -320,7 +320,7 @@ foreach ($galleryData['items'] as $item) {
             <input type="hidden" name="action" value="save">
 
             <div class="section">
-                <h2>FAQ</h2>
+                <h2>Вопросы и ответы</h2>
                 <div id="faq-list">
                     <?php foreach ($faqData['items'] as $i => $item): ?>
                         <div class="item">
