@@ -1,3 +1,19 @@
 {
-    "items": []
+    "items": [
+        {
+            "category": "fleet",
+            "image": "\/image\/uploads\/img_6985ace6b0b4a4.93071419.jpeg",
+            "alt": ""
+        },
+        {
+            "category": "port",
+            "image": "\/image\/uploads\/img_6985ad4221a889.63529590.jpeg",
+            "alt": ""
+        },
+        {
+            "category": "barges",
+            "image": "\/image\/uploads\/img_6985ad60a75289.54337741.jpeg",
+            "alt": ""
+        }
+    ]
 }

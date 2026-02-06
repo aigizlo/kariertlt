@@ -677,9 +677,11 @@ section {
 .gallery__track {
     display: grid;
     grid-auto-flow: column;
-    grid-auto-columns: minmax(220px, 1fr);
+    /* Prevent 1–2 photos from stretching to full width */
+    grid-auto-columns: clamp(220px, 34vw, 320px);
     gap: 18px;
     overflow-x: auto;
+    justify-content: center;
     scroll-snap-type: x mandatory;
     scroll-padding: 18px;
     padding: 6px 8px 12px;
@@ -690,7 +692,7 @@ section {
     border-radius: var(--radius-md);
     overflow: hidden;
     box-shadow: var(--shadow);
-    height: 200px;
+    height: clamp(200px, 28vw, 260px);
     scroll-snap-align: start;
 }
 
