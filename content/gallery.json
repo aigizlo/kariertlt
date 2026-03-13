@@ -3,22 +3,82 @@
         {
             "category": "fleet",
             "image": "\/image\/uploads\/img_6985b4156686a3.00896400.webp",
-            "alt": "Самосвалы для доставки нерудных материалов"
+            "alt": "Автопарк Карьер ТЛТ Тольятти"
         },
         {
             "category": "barges",
-            "image": "\/image\/uploads\/img_6985b415669bd9.76858218.jpg",
-            "alt": "Отгрузка нерудных материалов баржами"
+            "image": "\/image\/uploads\/img_6986d1b3725395.86947345.webp",
+            "alt": "Речные перевозки Карьер ТЛТ Тольятти"
         },
         {
-            "category": "road",
-            "image": "\/image\/uploads\/img_6985b41567e275.17325319.jpg",
-            "alt": "Дорожные работы с песком и щебнем"
+            "category": "build",
+            "image": "\/image\/uploads\/img_6986d1b3727195.40217858.webp",
+            "alt": "Песок для дорожного строительства Карьер ТЛТ Тольятти"
         },
         {
             "category": "pit",
-            "image": "\/image\/uploads\/img_6985b41567e988.06617565.jpeg",
-            "alt": "Карьер в Тольятти"
+            "image": "\/image\/uploads\/img_6986d1b37283a6.49649212.webp",
+            "alt": "Карьер ТЛТ Тольятти"
+        },
+        {
+            "category": "barges",
+            "image": "\/image\/uploads\/img_6986d1b3729134.20043520.webp",
+            "alt": "Речные перевозки Карьер ТЛТ Тольятти"
+        },
+        {
+            "category": "fleet",
+            "image": "\/image\/uploads\/img_6992d03a6da462.93671055.webp",
+            "alt": "Автопарк Карьер ТЛТ Тольятти"
+        },
+        {
+            "category": "fleet",
+            "image": "\/image\/uploads\/img_6992d03a6db9e4.03663090.webp",
+            "alt": "Автопарк Карьер ТЛТ Тольятти"
+        },
+        {
+            "category": "pit",
+            "image": "\/image\/uploads\/img_6992d03a6dc6a5.98628838.webp",
+            "alt": "Автопарк Карьер ТЛТ Тольятти"
+        },
+        {
+            "category": "port",
+            "image": "\/image\/uploads\/img_6992d03a6dd770.62891976.webp",
+            "alt": "Порт Тольятти Карьер ТЛТ"
+        },
+        {
+            "category": "pit",
+            "image": "\/image\/uploads\/img_6992d03a6df1d1.88569831.webp",
+            "alt": "Экскаватор Карьер ТЛТ Тольятти, добыча песка"
+        },
+        {
+            "category": "pit",
+            "image": "\/image\/uploads\/img_6992d03a6dfbf5.74146688.webp",
+            "alt": "Песчаный Карьер ТЛТ Тольятти"
+        },
+        {
+            "category": "port",
+            "image": "\/image\/uploads\/img_6992d3d65eef74.21848359.webp",
+            "alt": "Щебень в Порту Карьер ТЛТ"
+        },
+        {
+            "category": "barges",
+            "image": "\/image\/uploads\/img_6992d3d65f04d2.68711657.webp",
+            "alt": "Перевозка щебня по воде Карьер ТЛТ"
+        },
+        {
+            "category": "rail",
+            "image": "\/image\/uploads\/img_6992d3d65f0d89.42887399.webp",
+            "alt": "Перевалка щебня Карьер ТЛТ"
+        },
+        {
+            "category": "port",
+            "image": "\/image\/uploads\/img_6992d3d65f1b45.88535563.webp",
+            "alt": "Щебень в Порту Тольятти Карьер ТЛТ"
+        },
+        {
+            "category": "rail",
+            "image": "\/image\/uploads\/img_69969d99703407.05377816.webp",
+            "alt": "Погрузка ЖД вагонов Карьер ТЛТ"
         }
     ]
 }

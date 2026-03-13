@@ -21,10 +21,6 @@
             "label": "ЖД"
         },
         {
-            "value": "road",
-            "label": "Автобан"
-        },
-        {
             "value": "build",
             "label": "Стройки"
         }
