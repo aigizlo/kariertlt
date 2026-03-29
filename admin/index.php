@@ -88,6 +88,62 @@ function normalize_gallery_categories($items)
     return $out;
 }
 
+function default_products()
+{
+    return [
+        [
+            'title' => 'Песок горный',
+            'card_text' => 'Карьерный песок для подсыпки и бетона.',
+            'description' => 'Плотный карьерный песок для строительных и дорожных работ.',
+            'gost' => 'ГОСТ 8736‑2014',
+            'spec' => 'Фракция 0–5 мм, влажность 2–7%',
+            'use' => 'Дорожное строительство, подсыпка, бетон',
+            'image' => 'products/mountain.webp',
+            'alt' => 'Песок горный'
+        ],
+        [
+            'title' => 'Песок речной',
+            'card_text' => 'Промытый песок с низкой пылью.',
+            'description' => 'Чистый промытый песок для растворов и отделочных работ.',
+            'gost' => 'ГОСТ 8736‑2014',
+            'spec' => 'Фракция 0–2,5 мм',
+            'use' => 'Штукатурка, стяжки, благоустройство',
+            'image' => 'products/river.webp',
+            'alt' => 'Песок речной'
+        ],
+        [
+            'title' => 'Песок крупномодульный',
+            'card_text' => 'Крупный модуль для прочного бетона.',
+            'description' => 'Крупный песок для бетонных смесей повышенной прочности.',
+            'gost' => 'ГОСТ 8736‑2014',
+            'spec' => 'Модуль крупности 2,5–3,0',
+            'use' => 'Бетон, железобетон, плиты',
+            'image' => 'products/PGS.webp',
+            'alt' => 'Песок крупномодульный'
+        ],
+        [
+            'title' => 'Щебень известняковый',
+            'card_text' => 'Щебень известняковый купить для дорожных и инфраструктурных работ.',
+            'description' => 'Универсальный материал для дорог и подсыпки.',
+            'gost' => 'ГОСТ 8267‑93',
+            'spec' => 'Фракции 5–20, 20–40, 40–70 мм',
+            'use' => 'Дороги, основания, планировка',
+            'image' => 'products/limestone_aggregate.webp',
+            'alt' => 'Щебень известняковый'
+        ],
+        [
+            'title' => 'Щебень гранитный',
+            'card_text' => 'Щебень гранитный купить для ЖБИ, дорог и ответственных конструкций.',
+            'description' => 'Высокопрочный щебень для ответственных конструкций.',
+            'gost' => 'ГОСТ 8267‑93',
+            'spec' => 'Фракции 5–20, 20–40, 40–70 мм',
+            'use' => 'ЖБИ, дороги, мосты',
+            'image' => 'products/granite-aggregate.webp',
+            'alt' => 'Щебень гранитный'
+        ]
+    ];
+}
+
 function upload_file($inputName, $allowedExt, $targetDir)
 {
     if (!isset($_FILES[$inputName]) || $_FILES[$inputName]['error'] !== UPLOAD_ERR_OK) {
@@ -292,6 +348,9 @@ $faqData = safe_read_json(__DIR__ . '/../content/faq.json');
 $galleryData = safe_read_json(__DIR__ . '/../content/gallery.json');
 $galleryCatData = safe_read_json(__DIR__ . '/../content/gallery_categories.json');
 $docsData = safe_read_json(__DIR__ . '/../content/documents.json');
+if (empty($productsData['items'])) {
+    $productsData['items'] = default_products();
+}
 $defaultGalleryCats = [
     ['value' => 'fleet', 'label' => 'Автопарк'],
     ['value' => 'pit', 'label' => 'Карьер'],
