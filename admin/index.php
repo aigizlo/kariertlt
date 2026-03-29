@@ -134,6 +134,48 @@ if (isset($_POST['action']) && $_POST['action'] === 'logout') {
 if (isset($_POST['action']) && $_POST['action'] === 'save') {
     require_login();
 
+    $productItems = [];
+    if (!empty($_POST['product_title'])) {
+        foreach ($_POST['product_title'] as $i => $title) {
+            $title = trim($title);
+            $cardText = trim($_POST['product_card_text'][$i] ?? '');
+            $description = trim($_POST['product_description'][$i] ?? '');
+            $gost = trim($_POST['product_gost'][$i] ?? '');
+            $spec = trim($_POST['product_spec'][$i] ?? '');
+            $use = trim($_POST['product_use'][$i] ?? '');
+            $image = trim($_POST['product_image'][$i] ?? '');
+            $alt = trim($_POST['product_alt'][$i] ?? '');
+
+            $uploadKey = 'product_upload_' . $i;
+            $uploaded = upload_file($uploadKey, ['jpg', 'jpeg', 'png', 'webp'], __DIR__ . '/../image/uploads');
+            if ($uploaded) {
+                $image = '/image/uploads/' . $uploaded;
+            }
+
+            if ($title === '' && $description === '' && $image === '') {
+                continue;
+            }
+
+            if ($cardText === '') {
+                $cardText = $description;
+            }
+            if ($alt === '') {
+                $alt = $title;
+            }
+
+            $productItems[] = [
+                'title' => $title,
+                'card_text' => $cardText,
+                'description' => $description,
+                'gost' => $gost,
+                'spec' => $spec,
+                'use' => $use,
+                'image' => $image,
+                'alt' => $alt
+            ];
+        }
+    }
+
     $faqItems = [];
     if (!empty($_POST['faq_question'])) {
         foreach ($_POST['faq_question'] as $i => $q) {
@@ -200,12 +242,13 @@ if (isset($_POST['action']) && $_POST['action'] === 'save') {
     }
     $galleryCategories = array_values($galleryCategories);
 
+    $productsSaved = safe_write_json(__DIR__ . '/../content/products.json', ['items' => $productItems]);
     $faqSaved = safe_write_json(__DIR__ . '/../content/faq.json', ['items' => $faqItems]);
     $gallerySaved = safe_write_json(__DIR__ . '/../content/gallery.json', ['items' => $galleryItems]);
     $docsSaved = safe_write_json(__DIR__ . '/../content/documents.json', ['items' => $docItems]);
     $catsSaved = safe_write_json(__DIR__ . '/../content/gallery_categories.json', ['items' => $galleryCategories]);
 
-    if ($faqSaved && $gallerySaved && $docsSaved && $catsSaved) {
+    if ($productsSaved && $faqSaved && $gallerySaved && $docsSaved && $catsSaved) {
         $success = 'Изменения сохранены';
     } else {
         $error = 'Не удалось сохранить изменения';
@@ -244,6 +287,7 @@ if (!is_logged_in()) {
     exit;
 }
 
+$productsData = safe_read_json(__DIR__ . '/../content/products.json');
 $faqData = safe_read_json(__DIR__ . '/../content/faq.json');
 $galleryData = safe_read_json(__DIR__ . '/../content/gallery.json');
 $galleryCatData = safe_read_json(__DIR__ . '/../content/gallery_categories.json');
@@ -318,6 +362,60 @@ foreach ($galleryData['items'] as $item) {
         <?php if ($error): ?><div class="notice error"><?php echo htmlspecialchars($error); ?></div><?php endif; ?>
         <form method="post" enctype="multipart/form-data">
             <input type="hidden" name="action" value="save">
+
+            <div class="section">
+                <h2>Продукция</h2>
+                <div id="products-list">
+                    <?php foreach ($productsData['items'] as $i => $item): ?>
+                        <div class="item">
+                            <div class="row-3">
+                                <h3>Товар #<?php echo $i + 1; ?></h3>
+                                <div></div>
+                                <div>
+                                    <button type="button" class="btn btn-muted" onclick="removeItem(this)">Удалить</button>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div>
+                                    <label>Название</label>
+                                    <input name="product_title[]" value="<?php echo htmlspecialchars($item['title'] ?? ''); ?>">
+                                </div>
+                                <div>
+                                    <label>Alt-текст</label>
+                                    <input name="product_alt[]" value="<?php echo htmlspecialchars($item['alt'] ?? ''); ?>">
+                                </div>
+                            </div>
+                            <label>Краткое описание на карточке</label>
+                            <input name="product_card_text[]" value="<?php echo htmlspecialchars($item['card_text'] ?? ''); ?>">
+                            <label>Описание</label>
+                            <textarea name="product_description[]"><?php echo htmlspecialchars($item['description'] ?? ''); ?></textarea>
+                            <div class="row">
+                                <div>
+                                    <label>ГОСТ (опционально)</label>
+                                    <input name="product_gost[]" value="<?php echo htmlspecialchars($item['gost'] ?? ''); ?>">
+                                </div>
+                                <div>
+                                    <label>Характеристики (опционально)</label>
+                                    <input name="product_spec[]" value="<?php echo htmlspecialchars($item['spec'] ?? ''); ?>">
+                                </div>
+                            </div>
+                            <label>Применение (опционально)</label>
+                            <input name="product_use[]" value="<?php echo htmlspecialchars($item['use'] ?? ''); ?>">
+                            <div class="row">
+                                <div>
+                                    <label>URL изображения</label>
+                                    <input name="product_image[]" value="<?php echo htmlspecialchars($item['image'] ?? ''); ?>">
+                                </div>
+                                <div>
+                                    <label>Загрузить фото (опционально)</label>
+                                    <input type="file" name="product_upload_<?php echo $i; ?>" accept="image/*">
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+                <button type="button" class="btn btn-muted" onclick="addProduct()">Добавить товар</button>
+            </div>
 
             <div class="section">
                 <h2>Вопросы и ответы</h2>
@@ -425,6 +523,7 @@ foreach ($galleryData['items'] as $item) {
         </form>
     </main>
     <script>
+        const productsList = document.getElementById('products-list');
         const faqList = document.getElementById('faq-list');
         const galleryList = document.getElementById('gallery-list');
         const galleryCategoriesList = document.getElementById('gallery-categories');
@@ -445,6 +544,58 @@ foreach ($galleryData['items'] as $item) {
                 <textarea name="faq_answer[]"></textarea>
             `;
             faqList.appendChild(item);
+        }
+
+        function addProduct() {
+            const index = productsList.children.length;
+            const item = document.createElement('div');
+            item.className = 'item';
+            item.innerHTML = `
+                <div class="row-3">
+                    <h3>Новый товар</h3>
+                    <div></div>
+                    <div>
+                        <button type="button" class="btn btn-muted" onclick="removeItem(this)">Удалить</button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div>
+                        <label>Название</label>
+                        <input name="product_title[]" value="">
+                    </div>
+                    <div>
+                        <label>Alt-текст</label>
+                        <input name="product_alt[]" value="">
+                    </div>
+                </div>
+                <label>Краткое описание на карточке</label>
+                <input name="product_card_text[]" value="">
+                <label>Описание</label>
+                <textarea name="product_description[]"></textarea>
+                <div class="row">
+                    <div>
+                        <label>ГОСТ (опционально)</label>
+                        <input name="product_gost[]" value="">
+                    </div>
+                    <div>
+                        <label>Характеристики (опционально)</label>
+                        <input name="product_spec[]" value="">
+                    </div>
+                </div>
+                <label>Применение (опционально)</label>
+                <input name="product_use[]" value="">
+                <div class="row">
+                    <div>
+                        <label>URL изображения</label>
+                        <input name="product_image[]" value="">
+                    </div>
+                    <div>
+                        <label>Загрузить фото (опционально)</label>
+                        <input type="file" name="product_upload_${index}" accept="image/*">
+                    </div>
+                </div>
+            `;
+            productsList.appendChild(item);
         }
 
         function categoryOptionsHtml() {

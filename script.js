@@ -92,6 +92,88 @@ const productsTrack = document.querySelector('.products__track');
 const prevBtn = document.querySelector('.control--prev');
 const nextBtn = document.querySelector('.control--next');
 
+const openProductModal = (product) => {
+    if (!product || !modal || !modalTitle || !modalDesc || !modalImage) return;
+    const { title, desc, gost, spec, use, image } = product.dataset;
+    lastProductTitle = title || '';
+    modalTitle.textContent = title || '';
+    modalDesc.textContent = desc || '';
+    modalFields.spec.textContent = spec || '—';
+    modalFields.gost.textContent = gost || '—';
+    modalFields.use.textContent = use || '—';
+    modalImage.src = image || '';
+    modalImage.alt = title || '';
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+};
+
+const renderProductOptions = (items) => {
+    if (!materialSelect || !Array.isArray(items)) return;
+    materialSelect.innerHTML = '';
+    const placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.disabled = true;
+    placeholder.selected = true;
+    placeholder.textContent = 'Выберите материал';
+    materialSelect.appendChild(placeholder);
+
+    items.forEach((item) => {
+        if (!item.title) return;
+        const option = document.createElement('option');
+        option.value = item.title;
+        option.textContent = item.title;
+        materialSelect.appendChild(option);
+    });
+};
+
+const renderProducts = (items) => {
+    if (!productsTrack || !Array.isArray(items)) return;
+    productsTrack.innerHTML = '';
+    renderProductOptions(items);
+
+    if (items.length === 0) return;
+
+    items.forEach((item) => {
+        if (!item.title || !item.image) return;
+        const article = document.createElement('article');
+        article.className = 'product';
+        article.dataset.title = item.title;
+        article.dataset.desc = item.description || item.card_text || '';
+        article.dataset.gost = item.gost || '';
+        article.dataset.spec = item.spec || '';
+        article.dataset.use = item.use || '';
+        article.dataset.image = item.image;
+
+        const picture = document.createElement('picture');
+        if (/\.webp$/i.test(item.image)) {
+            const source = document.createElement('source');
+            source.srcset = item.image;
+            source.type = 'image/webp';
+            picture.appendChild(source);
+        }
+
+        const img = document.createElement('img');
+        img.src = item.image;
+        img.alt = item.alt || item.title;
+        img.loading = 'lazy';
+        img.width = 320;
+        img.height = 180;
+
+        const title = document.createElement('h3');
+        title.textContent = item.title;
+
+        const text = document.createElement('p');
+        text.textContent = item.card_text || item.description || '';
+
+        picture.appendChild(img);
+        article.appendChild(picture);
+        article.appendChild(title);
+        article.appendChild(text);
+        productsTrack.appendChild(article);
+    });
+};
+
 if (productsTrack && prevBtn && nextBtn) {
     const scrollAmount = () => productsTrack.querySelector('.product')?.offsetWidth || 260;
 
@@ -128,23 +210,14 @@ if (productsTrack && prevBtn && nextBtn) {
 }
 
 let lastProductTitle = '';
-const products = document.querySelectorAll('.product');
-products.forEach((product) => {
-    product.addEventListener('click', () => {
-        const { title, desc, gost, spec, use, image } = product.dataset;
-        lastProductTitle = title || '';
-        modalTitle.textContent = title;
-        modalDesc.textContent = desc;
-        modalFields.spec.textContent = spec;
-        modalFields.gost.textContent = gost;
-        modalFields.use.textContent = use;
-        modalImage.src = image;
-        modalImage.alt = title;
-        modal.classList.add('is-open');
-        modal.setAttribute('aria-hidden', 'false');
-        document.body.style.overflow = 'hidden';
+if (productsTrack) {
+    productsTrack.addEventListener('click', (event) => {
+        if (!(event.target instanceof Element)) return;
+        const product = event.target.closest('.product');
+        if (!product) return;
+        openProductModal(product);
     });
-});
+}
 
 const closeModal = () => {
     modal.classList.remove('is-open');
@@ -459,12 +532,17 @@ const renderDocuments = (items) => {
 
 const loadContentFromJson = async () => {
     try {
-        const [faqRes, galleryRes, docsRes, catsRes] = await Promise.all([
+        const [productsRes, faqRes, galleryRes, docsRes, catsRes] = await Promise.all([
+            fetch('content/products.json'),
             fetch('content/faq.json'),
             fetch('content/gallery.json'),
             fetch('content/documents.json'),
             fetch('content/gallery_categories.json')
         ]);
+        if (productsRes.ok) {
+            const productsData = await productsRes.json();
+            renderProducts(productsData.items || []);
+        }
         if (faqRes.ok) {
             const faqData = await faqRes.json();
             renderFaq(faqData.items || []);
