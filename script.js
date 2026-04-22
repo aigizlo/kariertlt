@@ -409,26 +409,55 @@ if (phoneInput) {
 
 const form = document.getElementById('requestForm');
 if (form) {
-    form.addEventListener('submit', (event) => {
+    const submitButton = form.querySelector('button[type="submit"]');
+    const formStatus = form.querySelector('.form-status');
+    const defaultButtonLabel = submitButton ? submitButton.textContent.trim() : '';
+
+    const setFormStatus = (message, type = '') => {
+        if (!formStatus) return;
+        formStatus.textContent = message;
+        formStatus.hidden = !message;
+        formStatus.className = type ? `form-status is-${type}` : 'form-status';
+    };
+
+    form.addEventListener('submit', async (event) => {
         event.preventDefault();
+        if (!submitButton) return;
+
         const formData = new FormData(form);
-        fetch('send_telegram.php', {
-            method: 'POST',
-            body: formData
-        })
-            .then((res) => res.json())
-            .then((data) => {
-                if (data && data.success) {
-                    form.classList.add('is-sent');
-                    alert('Спасибо! Мы получили заявку и скоро свяжемся с вами.');
-                    form.reset();
-                } else {
-                    alert('Не удалось отправить заявку. Попробуйте еще раз.');
-                }
-            })
-            .catch(() => {
-                alert('Не удалось отправить заявку. Попробуйте еще раз.');
+        submitButton.disabled = true;
+        submitButton.classList.add('is-loading');
+        submitButton.textContent = 'Отправляем...';
+        setFormStatus('Отправляем заявку...', 'pending');
+
+        try {
+            const response = await fetch('send_telegram.php', {
+                method: 'POST',
+                body: formData
             });
+            const data = await response.json().catch(() => null);
+
+            if (!response.ok || !data || !data.success) {
+                throw new Error('submit_failed');
+            }
+
+            form.classList.add('is-sent');
+            form.reset();
+            setFormStatus('', '');
+
+            const redirectUrl = new URL('thank-you.html', window.location.href);
+            const currentParams = new URLSearchParams(window.location.search);
+            currentParams.forEach((value, key) => {
+                redirectUrl.searchParams.set(key, value);
+            });
+            redirectUrl.searchParams.set('source', 'form');
+            window.location.href = redirectUrl.toString();
+        } catch (error) {
+            submitButton.disabled = false;
+            submitButton.classList.remove('is-loading');
+            submitButton.textContent = defaultButtonLabel;
+            setFormStatus('Не удалось отправить заявку. Попробуйте еще раз или позвоните нам по номеру +7 (8482) 79-77-33.', 'error');
+        }
     });
 }
 
